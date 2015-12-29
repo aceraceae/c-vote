@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Casting Vote</title>
+        <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
+        <script src="../node_modules/angular/angular.min.js"></script>
+        <script src="../node_modules/angular-ui-router/build/angular-ui-router.min.js"></script>
+        <script src="../node_modules/chart.js/Chart.js"></script>
+        <script src="../app.js"></script>
+        <link rel="stylesheet" type="text/css" href="../public/style.css" />
+        
+    </head>
+    <body ng-app="castingVote" ng-controller="UberCtrl">
+     <div class="header">
+      
+     <img src="../public/logo-vote3.png"/>
+     
+     <a class="btn btn-default" href="#/main">Home</a>
+     </div>
+     <div class="box">
+         <div ng-class="slide ? 'box-slide' : 'box-one'">
+             <div ui-view="all"></div>
+             <ui-view></ui-view>
+         </div>
+         <div class="box-two">
+          <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+            <div ui-view="edit" ng-show="slideEdit"></div>
+                 <div ui-view="home" ng-hide="slideEdit"></div>
+                 
+                 </div>
+         </div>
+</div>
+     </div>
+           <!-- template -->
+       <script type="text/ng-template" id="/home.html">
+       <h3>Create poll</h3>
+          <form name="createPoll" ng-submit="addQuest()" role="form">
+          <div class="form-group">
+        <label> Question : </label>
+         <input  class="form-control" type="text" ng-model="question" required></input><br/>
+         <label> Options: </label><br/>
+         <div ng-repeat="opt in options">
+         <div class="row">
+         <div class="col-md-11">
+         <input type="text" class="form-control" ng-model="opt.text" placeholder="Option {{ $index + 1 }}" required></input>
+         </div>
+         <div class="col-md-1">
+         <input type="button" ng-click="deleteEmpty(opt)" class="btn btn-success" value="-" />
+         </div>
+         </div>
+         <br/>
+         </div>
+          </div>
+         <input type="checkbox" ng-model="multi"> </input> allow multiple choice
+         <button type="button" ng-click="addEmpty()" class="btn btn-success">+</button>
+         <input type="submit" value="Submit" class="btn btn-success" />
+        
+        </form>
+</script>
+
+
+ <!-- template -->
+       <script type="text/ng-template" id="/poll.html">
+       <div>
+         {{ poll.question }}
+           <div ng-repeat="opt in poll.options">
+            <input type="checkbox" ng-model="opt.checked" ng-click="addVote(opt)"> {{ opt.text }}
+           </div>
+          <input type="submit" class="btn btn-success" ng-click="votingDone(poll)" value="Submit">
+        </div>
+           </script>
+           
+           
+           
+             <!-- template -->
+         <script type="text/ng-template" id="/chart.html">
+         <div class="row">
+        
+           <div class="col-md-4 col-md-offset-4">
+           <div class="chartbkg">
+            <div>{{ poll.question }}</div>
+           <canvas id="myPoll" width="600" height="600"></canvas>
+           </div>
+           </div>
+           </div>
+        </script>
+            <!-- template -->
+         <script type="text/ng-template" id="/all.html">
+          <div>
+         <h3>Your polls:</h3>
+         </div>
+         <div ng-repeat="poll in polls">
+         <div class="thumbnail" ng-mouseenter="show = true" ng-mouseleave="show = false">
+         <h3>{{ poll.question }}</h3>
+         <p>Votes: {{ poll.countAll }}</p>
+         <div ng-show="show">
+         <a class="btn btn-success" href="#/chart/{{ poll._id }}">View chart</a>
+         <a class="btn btn-success" href="#/poll/{{poll._id}}">Vote</a>
+         <button class="btn btn-success" id="edit" ng-click="edit(poll)">Edit</button>
+         <button class="btn btn-success" id="delete" ng-click="del(poll, $index)">Delete</button>
+         </div>
+         </div>
+          </div>
+          <button class="btn btn-success" ng-click="slideForm()">Add new poll</button>
+        </script>
+            <!-- template -->
+         <script type="text/ng-template" id="/edit.html">
+        <h3>Edit poll</h3>
+        <form name="editPoll" ng-submit="editQuest()" role="form">
+          <div class="form-group">
+        <label> Question : </label>
+         <input  class="form-control" type="text" ng-model="poll.question" required></input><br/>
+         <label> Options: </label><br/>
+         <div ng-repeat="opt in poll.options">
+          <div class="row">
+             <div class="col-md-11">
+                <input type="text" class="form-control" ng-model="opt.text" placeholder="Option {{ $index + 1 }}" required></input>
+             </div>
+             <div class="col-md-1">
+                  <input type="button" ng-click="deleteEmpty(opt, $index)" class="btn btn-success" value="-" />
+             </div>
+            </div>
+            <br/>
+          </div>
+          </div>
+         <input type="checkbox" ng-model="poll.multi"> </input> allow multiple choice
+          <input type="checkbox" ng-model="deleteCount"> </input> delete existing votes
+         <button type="button" ng-click="addEmpty()" class="btn btn-success">+</button>
+         <input type="submit" value="Save" class="btn btn-success" />
+         </form>
+ 
+
+        </script>
+        
+        
+        
+        
+       <script type="text/javascript" src="controllers.js"></script>
+       <script type="text/javascript" src="services.js"></script>
+       <script type="text/javascript" src="ui-routes.js"></script>
+       
+    </body>
+</html>
