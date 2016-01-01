@@ -6,7 +6,7 @@ var Option = mongoose.model('Option');
 // GET ALL
 
 module.exports = function (app) {
-  
+
 app.get('/all', function(req, res, next) {
   Poll.find(function(err, polls){
     if(err){ return next(err); }
