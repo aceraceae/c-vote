@@ -2,20 +2,60 @@
 var mongoose = require('mongoose');
 var Poll = mongoose.model('Poll');
 var Option = mongoose.model('Option');
-
+var User = mongoose.model('User');
+var passport = require('passport');
+var jwt = require('express-jwt');
+var auth = jwt({secret: process.env.SECRET, userProperty: 'payload'});
 // GET ALL
 
 module.exports = function (app) {
 
-app.get('/all', function(req, res, next) {
-  Poll.find(function(err, polls){
+  
+app.post('/register', function(req, res, next) {
+     if(!req.body.username || !req.body.password){
+    return res.status(400).json({message: 'Please fill out all fields'});
+  }
+  var user = new User();
+
+  user.username = req.body.username;
+
+  user.setPassword(req.body.password)
+
+  user.save(function (err){
+    if(err){ return next(err); }
+
+    return res.json({token: user.generateJWT()})
+  });
+  
+});  
+
+app.post('/login', function(req, res, next) {
+      if(!req.body.username || !req.body.password){
+    return res.status(400).json({message: 'Please fill out all fields'});
+  }
+ 
+  passport.authenticate('local', function(err, user, info){
+    if(err){ return next(err); }
+
+    if(user){
+      return res.json({token: user.generateJWT()});
+    } else {
+      return res.status(401).json(info);
+    }
+  })(req, res, next);
+}); 
+
+
+  
+app.get('/all/:user', auth, function(req, res, next) {
+  Poll.find({user: req.user},function(err, polls){
     if(err){ return next(err); }
     res.json(polls);
   });
 });
 
 // POST ALL
-app.post('/all', function(req, res, next) {
+app.post('/all/:user', auth, function(req, res, next) {
   var poll = new Poll(req.body);
   var option;
   poll.options = [];
@@ -35,7 +75,19 @@ app.post('/all', function(req, res, next) {
 
 });
 
-app.put('/all', function(req,res, next) {
+app.param('user', function(req, res, next, param) {
+   var query = User.findById(param);
+   query.exec(function (err, user){
+    if (err) { return next(err); }
+    if (!user) { return next(new Error('can\'t find user')); }
+
+    req.user = user;
+    return next();
+  });
+
+});
+
+app.put('/all', auth, function(req,res, next) {
   var poll = req.body;
   Poll.findByIdAndRemove(poll.id, function(err) {
   if (err) throw err;
@@ -91,8 +143,7 @@ app.put('/poll/:poll/countAll', function(req, res, next) {
   });
 });
 
-
-app.put('/poll/:poll/option/:option', function(req,res, next) {
+app.put('/poll/:poll/option/:option', auth, function(req,res, next) {
   
   Option.remove({ _id: req.option._id }, function(err) {
     if (err) throw err;
@@ -109,7 +160,7 @@ app.put('/poll/:poll/option/:option', function(req,res, next) {
  
 });
 
-app.post('/poll/:poll/option', function(req,res, next) {
+app.post('/poll/:poll/option', auth, function(req,res, next) {
   var option = new Option(req.body);
  // option.poll = req.poll;
     option.save(function(err, option){
@@ -127,7 +178,7 @@ app.put('/poll/:poll/option/:option/count', function(req, res, next) {
          });
      });
      
-app.put('/poll/:poll/deletecount', function(req, res, next) {
+app.put('/poll/:poll/deletecount', auth, function(req, res, next) {
    Poll.findById(req.poll._id).exec(function (err, poll) {
        if (err) { return next(err); }
           poll.countAll = 0;
@@ -141,7 +192,7 @@ app.put('/poll/:poll/deletecount', function(req, res, next) {
           });
      });
 });
-app.put('/poll/:poll/update', function(req,res,next) {
+app.put('/poll/:poll/update', auth, function(req,res,next) {
   var option, completer = 0;
   
     req.body.options.forEach(function(opt, idx) {
@@ -206,5 +257,6 @@ app.param('option', function(req, res, next, param) {
   });
 
 });
+
 
 };
