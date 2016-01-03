@@ -13,13 +13,22 @@
     <body ng-app="castingVote" ng-controller="UberCtrl">
      <div class="header">
       
-     <img src="../public/logo-vote3.png"/>
-     
-     <a class="btn btn-default" href="#/main">Home</a>
+     <img src="../public/logo-vote3.png" id="logo" />
+     <!--<nav class="navbar navbar-default pull-right" ng-controller="NavCtrl">-->
+    <ul class="nav navbar-nav pull-right"  ng-controller="NavCtrl">
+      <li ng-show="isLoggedIn()"><a>{{ currentUser() }}</a></li>
+      <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
+      <li ng-show="isLoggedIn()"><a href="/#/main">Home</a></li>
+      <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
+      <li ng-hide="isLoggedIn()"><a href="/#/register">Sign Up</a></li>
+      
+    </ul>
+ <!-- </nav>-->
      </div>
      <div class="box">
          <div ng-class="slide ? 'box-slide' : 'box-one'">
-             <div ui-view="all"></div>
+             <span ng-hide="isLoggedIn()">You're not logged in.</span>
+             <div ng-show="isLoggedIn()" ui-view="all"></div>
              <ui-view></ui-view>
          </div>
          <div class="box-two">
@@ -62,7 +71,7 @@
 
  <!-- template -->
        <script type="text/ng-template" id="/poll.html">
-       <div>
+       <div class="col-md-4 col-md-offset-4 pollbkg">
          {{ poll.question }}
            <div ng-repeat="opt in poll.options">
             <input type="checkbox" ng-model="opt.checked" ng-click="addVote(opt)"> {{ opt.text }}
@@ -88,10 +97,17 @@
             <!-- template -->
          <script type="text/ng-template" id="/all.html">
           <div>
+          <div class="row">
+          <div class="col-md-3 col-md-offset-2">
          <h3>Your polls:</h3>
          </div>
-         <div ng-repeat="poll in polls">
-         <div class="thumbnail" ng-mouseenter="show = true" ng-mouseleave="show = false">
+         <div class="col-md-5">
+           <button id="add" class="btn btn-success pull-right" ng-click="slideForm()">Add new poll</button>
+           </div>
+         </div>
+         
+         <div class="row" ng-repeat="poll in polls">
+         <div class="col-md-8 col-md-offset-2 thumbnail" ng-mouseenter="show = true" ng-mouseleave="show = false">
          <h3>{{ poll.question }}</h3>
          <p>Votes: {{ poll.countAll }}</p>
          <div ng-show="show">
@@ -102,7 +118,8 @@
          </div>
          </div>
           </div>
-          <button class="btn btn-success" ng-click="slideForm()">Add new poll</button>
+        </div>
+        
         </script>
             <!-- template -->
          <script type="text/ng-template" id="/edit.html">
@@ -129,9 +146,60 @@
          <button type="button" ng-click="addEmpty()" class="btn btn-success">+</button>
          <input type="submit" value="Save" class="btn btn-success" />
          </form>
- 
+</script>
 
-        </script>
+<script type="text/ng-template" id="/register.html">
+
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+<div class="col-md-4 col-md-offset-4">
+  <form  class="login" ng-submit="register()">
+    <h3>Sign Up</h3>
+
+    <div class="form-group">
+      <input type="text"
+      class="form-control"
+      placeholder="Username"
+      ng-model="user.username"></input>
+    </div>
+    <div class="form-group">
+      <input type="password"
+      class="form-control"
+      placeholder="Password"
+      ng-model="user.password"></input>
+    </div>
+    <input type="submit" class="btn btn-primary" value="Submit" />
+  </form>
+  </div>
+</script>
+
+<script type="text/ng-template" id="/login.html">
+
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+  
+<div class="col-md-4 col-md-offset-4">
+  <form  class="login" ng-submit="logIn()">
+    <h3>Log In</h3>
+
+    <div class="form-group">
+      <input type="text"
+      class="form-control"
+      placeholder="Username"
+      ng-model="user.username"></input>
+    </div>
+    <div class="form-group">
+      <input type="password"
+      class="form-control"
+      placeholder="Password"
+      ng-model="user.password"></input>
+    </div>
+    <input type="submit" class="btn btn-primary pull-right" value="Log In" />
+  </form>
+  </div>
+  </script>
         
         
         
