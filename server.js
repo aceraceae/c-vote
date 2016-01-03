@@ -4,16 +4,20 @@ var path = require('path');
 var mongoose = require('mongoose');
 require('./models/Polls');
 require('./models/Options');
+require('./models/Users');
+require('./config/passport');
+var passport = require('passport');
 var bodyParser = require('body-parser');
+require('dotenv').load();
 var routes = require('./app/routes/index');
 var app = express();
-
-mongoose.connect('mongodb://localhost:27017/cvotedb');
+mongoose.connect(process.env.MONGO_URI);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.resolve(__dirname)));
 app.use(express.static(path.resolve(__dirname, 'public')));
+app.use(passport.initialize());
 
 app.get('/', function (req, res) {
 		res.sendFile(process.cwd() + 'public/index.html');
