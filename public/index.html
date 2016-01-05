@@ -6,7 +6,7 @@
         <script src="../node_modules/angular/angular.min.js"></script>
         <script src="../node_modules/angular-ui-router/build/angular-ui-router.min.js"></script>
         <script src="../node_modules/chart.js/Chart.js"></script>
-        <script src="../app.js"></script>
+        <script src="../app/app.js"></script>
         <link rel="stylesheet" type="text/css" href="../public/style.css" />
         
     </head>
@@ -14,20 +14,16 @@
      <div class="header">
       
      <img src="../public/logo-vote3.png" id="logo" />
-     <!--<nav class="navbar navbar-default pull-right" ng-controller="NavCtrl">-->
     <ul class="nav navbar-nav pull-right"  ng-controller="NavCtrl">
-      <li ng-show="isLoggedIn()"><a>{{ currentUser() }}</a></li>
-      <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
-      <li ng-show="isLoggedIn()"><a href="/#/main">Home</a></li>
-      <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
+      <li ng-show="isLoggedIn()"><a href="/#/main">{{ currentUser() }}</a></li>
+      <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Logout</a></li>
+      <li ng-hide="isLoggedIn()"><a href="/#/login">Login</a></li>
       <li ng-hide="isLoggedIn()"><a href="/#/register">Sign Up</a></li>
-      
     </ul>
- <!-- </nav>-->
      </div>
      <div class="box">
          <div ng-class="slide ? 'box-slide' : 'box-one'">
-             <span ng-hide="isLoggedIn()">You're not logged in.</span>
+             <div ng-hide="isLoggedIn()" ui-view="start"></div>
              <div ng-show="isLoggedIn()" ui-view="all"></div>
              <ui-view></ui-view>
          </div>
@@ -40,6 +36,12 @@
                  </div>
          </div>
 </div>
+     </div>
+     <div class="footer">
+         <div class="col-md-3 col-md-offset-2">
+ <a href="http://www.freecodecamp.com/" target="_blank">FreeCodeCamp Basejump </a> &#8286;
+     <a href="https://github.com/aceraceae/c-vote" target="_blank"> GitHub Repo </a> &#8286;
+     <a href="https://twitter.com/jwjanus" target="_blank"> @jwjanus </a></div>
      </div>
            <!-- template -->
        <script type="text/ng-template" id="/home.html">
@@ -76,7 +78,7 @@
            <div ng-repeat="opt in poll.options">
             <input type="checkbox" ng-model="opt.checked" ng-click="addVote(opt)"> {{ opt.text }}
            </div>
-          <input type="submit" class="btn btn-success" ng-click="votingDone(poll)" value="Submit">
+          <input type="submit" class="btn btn-success pull-right" id="poll-vote" ng-click="votingDone(poll)" value="Vote">
         </div>
            </script>
            
@@ -88,8 +90,10 @@
         
            <div class="col-md-4 col-md-offset-4">
            <div class="chartbkg">
-            <div>{{ poll.question }}</div>
+            <div id="chart-question">{{ poll.question }}</div>
+            <div class="canvas-container">
            <canvas id="myPoll" width="600" height="600"></canvas>
+           </div>
            </div>
            </div>
            </div>
@@ -169,7 +173,7 @@
       placeholder="Password"
       ng-model="user.password"></input>
     </div>
-    <input type="submit" class="btn btn-primary" value="Submit" />
+     <input type="submit" class="btn btn-success pull-right" value="Sign Up" />
   </form>
   </div>
 </script>
@@ -196,17 +200,30 @@
       placeholder="Password"
       ng-model="user.password"></input>
     </div>
-    <input type="submit" class="btn btn-primary pull-right" value="Log In" />
+    <input type="submit" class="btn btn-success pull-right" value="Log In" />
   </form>
   </div>
+  </script>
+ 
+  <script type="text/ng-template" id="/start.html">
+<div class="row">
+<div class="col-md-6" id="logout-message-1">
+<i>Casting Vote is a place where you can create your own polls<br/> and share them with friends.</i><br />
+<span id="logout"> You are not logged in.<span>
+
+</div>
+</div>
+
+
+
   </script>
         
         
         
         
-       <script type="text/javascript" src="controllers.js"></script>
-       <script type="text/javascript" src="services.js"></script>
-       <script type="text/javascript" src="ui-routes.js"></script>
+       <script type="text/javascript" src="./app/controllers.js"></script>
+       <script type="text/javascript" src="./app/services.js"></script>
+       <script type="text/javascript" src="./app/routes/ui-routes.js"></script>
        
     </body>
 </html>
