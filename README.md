@@ -1,7 +1,7 @@
 # c-vote
-FreeCodeCamp Basejump - build a voting app
+FreeCodeCamp Basejump - Build a Voting App
 
-Objectives:
+User Stories:
 
 check - As an authenticated user, I can keep my polls and come back later to access them.
 
