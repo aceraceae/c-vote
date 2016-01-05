@@ -194,8 +194,9 @@ app.put('/poll/:poll/deletecount', auth, function(req, res, next) {
 });
 app.put('/poll/:poll/update', auth, function(req,res,next) {
   var option, completer = 0;
-  
+
     req.body.options.forEach(function(opt, idx) {
+      
     if(opt.hasOwnProperty('_id')) {
     Option.update({_id: opt}, { 'text': req.body.options[idx].text }, function(err, opt) {
     if(err) return next(err);
@@ -204,18 +205,18 @@ app.put('/poll/:poll/update', auth, function(req,res,next) {
     } else {
            option = new Option(opt);
            option.save(function(err, opti){
-           if(err){ 
-             return next(err);
-           }
-           });
-           Poll.findById(req.poll._id).exec(function(err, poll) {
+
+           if(err){ return next(err); }
+              Poll.findById(req.poll._id).exec(function(err, poll) {
              if(err) return next(err);
-             poll.options.push(option);
+             poll.options.push(opti);
              poll.save(function(err) {
                 if(err) return next(err);
                 complete();
              });
            });
+           });
+        
     }
   });
   
@@ -231,7 +232,7 @@ app.put('/poll/:poll/update', auth, function(req,res,next) {
       completer = 0;
       Poll.findById(req.poll._id).exec(function(err, poll) {
         if(err) {return next(err); }
-        console.log("eueue");
+      //  console.log(poll);
         res.json(poll);
       });
     }
@@ -242,8 +243,6 @@ app.put('/poll/:poll/update', auth, function(req,res,next) {
 
 
 });
-
-
 
 // OPTION PARAM
 app.param('option', function(req, res, next, param) {
@@ -257,6 +256,5 @@ app.param('option', function(req, res, next, param) {
   });
 
 });
-
 
 };

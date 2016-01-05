@@ -1,6 +1,6 @@
-//sliding panels
-app.controller('UberCtrl', ['$scope', 'slide', function($scope, slide) {
- 
+//CONTROLLERS
+app.controller('UberCtrl', ['$scope', 'slide', 'auth', function($scope, slide, auth) {
+ $scope.isLoggedIn = auth.isLoggedIn;
  $scope.$watch(function() { return slide.slide; }, function() { $scope.slide = slide.slide;
  });
   $scope.$watch(function() { return slide.edit; }, function() { $scope.slideEdit = slide.edit;
@@ -8,8 +8,18 @@ app.controller('UberCtrl', ['$scope', 'slide', function($scope, slide) {
 
  
  }]);
-//creating new poll
-app.controller('MainCtrl', ['$scope', '$state', 'polls', 'slide', function($scope, $state, polls, slide) {
+ 
+ app.controller('NavCtrl', [
+'$scope',
+'auth',
+function($scope, auth){
+  $scope.isLoggedIn = auth.isLoggedIn;
+  $scope.currentUser = auth.currentUser;
+  $scope.logOut = auth.logOut;
+}]);
+//HOME CONTROLLER
+app.controller('MainCtrl', ['$scope', '$state', 'polls', 'slide', 'auth', function($scope, $state, polls, slide, auth) {
+    $scope.userId = auth.userId();
     $scope.polls = polls.polls;
     $scope.options = [{ text: "", count: 0 }, { text: "", count: 0 }];
     $scope.multi = false;
@@ -20,7 +30,8 @@ app.controller('MainCtrl', ['$scope', '$state', 'polls', 'slide', function($scop
      question: $scope.question,
      options: $scope.options,
      multi: $scope.multi,
-     countAll: 0
+     countAll: 0,
+     user: $scope.userId
     });
     $scope.options = [{ text: "", count: 0 }, { text: "", count: 0 }];
     $scope.question = "";
@@ -46,7 +57,7 @@ app.controller('MainCtrl', ['$scope', '$state', 'polls', 'slide', function($scop
 }]);
 
 
-//voting
+//POLL CONTROLLER
 app.controller('PollsCtrl', ['$scope', '$state', 'polls', 'poll', function($scope, $state, polls, poll){
  $scope.poll = poll;
 
@@ -87,7 +98,7 @@ app.controller('PollsCtrl', ['$scope', '$state', 'polls', 'poll', function($scop
  }]);
  
 
- //chart
+ //CHART CONTROLLER
   app.controller('ChartCtrl', ['$scope', 'polls', 'poll', function($scope, polls, poll){ 
     $scope.poll = poll;
     $scope.names = polls.names($scope.poll);
@@ -98,10 +109,10 @@ app.controller('PollsCtrl', ['$scope', '$state', 'polls', 'poll', function($scop
    datasets: [
    {
             label: "My First dataset",
-            fillColor: "rgba(38,141,48,0.5)",
-            strokeColor: "rgba(220,220,220,0.8)",
-            highlightFill: "rgba(38,200,48,0.75)",
-            highlightStroke: "rgba(220,220,220,1)",
+            fillColor: "rgba(77,127,106,0.7)",
+            strokeColor: "rgba(120,120,120,0.1)",
+            highlightFill: "rgba(57,107,86,0.8)",
+            highlightStroke: "rgba(220,220,220,0.5)",
             data: $scope.counter
             }
   ]
@@ -113,9 +124,13 @@ app.controller('PollsCtrl', ['$scope', '$state', 'polls', 'poll', function($scop
     scaleShowHorizontalLines: true,
     scaleShowVerticalLines: true,
     barShowStroke : true,
+    scaleFontSize: 18,
+    scaleFontColor: '#444444',
+    responsive: true
 });
  }]);
- //dashboard
+
+ //ALLPOLLS CONTROLLER
  app.controller('AllCtrl', ['$scope', '$state', 'polls', 'slide', function($scope, $state, polls, slide){ 
     $scope.polls = polls.polls;
      $scope.slide = slide.slide; 
@@ -141,7 +156,7 @@ app.controller('PollsCtrl', ['$scope', '$state', 'polls', 'poll', function($scop
   slide.slide = $scope.slide; 
  };
  }]);
- //edit
+ //EDIT CONTROLLER
  app.controller('EditCtrl', ['$scope', '$state', '$http', 'polls', 'slide', function($scope, $state, $http, polls, slide) {
  //$scope.$watch(function() { return polls.edit; }, function() {$scope.idx = polls.edit;});
  $scope.$watch(function() { return polls.edit; }, function() { if(polls.edit !== 0){  getPoll(); }});
@@ -195,6 +210,22 @@ function getPoll() {
     };
     
  }]);
+  app.controller('AuthCtrl', ['$scope','$state','auth', function($scope, $state, auth){
+  $scope.user = {};
 
+  $scope.register = function(){
+    auth.register($scope.user).error(function(error){
+      $scope.error = error;
+    }).then(function(){
+      $state.go('main');
+    });
+  };
 
-
+  $scope.logIn = function(){
+    auth.logIn($scope.user).error(function(error){
+      $scope.error = error;
+    }).then(function(){
+      $state.go('main');
+    });
+  };
+}])

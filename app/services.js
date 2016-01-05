@@ -1,5 +1,4 @@
 //SERVICES
-//Poll service
 app.factory('polls', ['$http', 'auth', function($http, auth){
   var obj = {
     polls: [],
@@ -40,7 +39,12 @@ app.factory('polls', ['$http', 'auth', function($http, auth){
     headers: {Authorization: 'Bearer '+auth.getToken()}});
       
   };
-
+  /*
+  obj.createOpt = function(option, idx) {
+    return $http.post('/poll/' + option.poll + '/option', option).success(function(data) {
+      obj.newOpt = data._id;
+    });
+  };*/
   obj.updatePoll = function(poll) {
     return $http.put('/poll/' + poll._id + '/update', poll, {
     headers: {Authorization: 'Bearer '+auth.getToken()}}).success(function(data) {
@@ -77,7 +81,7 @@ app.factory('polls', ['$http', 'auth', function($http, auth){
   };
   return obj;
 }]);
-//Slide panels
+
 app.factory('slide', [function(){
   var obj = {
     slide: false,
@@ -86,8 +90,8 @@ app.factory('slide', [function(){
   };
   return obj;
 }]);
-//Authentication
-app.factory('auth', ['$http', '$window', function($http, $window) {
+
+app.factory('auth', ['$http', '$window', 'slide', function($http, $window, slide) {
   var auth = {};
   auth.saveToken = function (token){
   $window.localStorage['c-vote-token'] = token;
@@ -133,8 +137,13 @@ auth.logIn = function(user){
   });
 };
 auth.logOut = function(){
+  console.log(slide.slide);
+  if(slide.slide) {
+    slide.slide = false;
+  }
   $window.localStorage.removeItem('c-vote-token');
 };
   return auth;
 }]);
+
 

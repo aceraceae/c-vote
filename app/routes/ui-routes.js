@@ -13,11 +13,9 @@ function($stateProvider, $urlRouterProvider) {
       controller: 'MainCtrl',
       resolve: {
           postPromise: ['polls', 'auth', function(polls, auth){
-              console.log("Hello");
               if(auth.isLoggedIn()){
                  
           var userId = auth.userId();
-           console.log(userId);
           return polls.getAll(userId);
               }
        }]
@@ -27,6 +25,11 @@ function($stateProvider, $urlRouterProvider) {
        templateUrl: '/all.html',
        url: '/all',
        controller: 'AllCtrl',
+      },
+      'start' : {
+       templateUrl: '/start.html'
+      // url: '/start',
+      // controller: 'AllCtrl',
       },
       'edit' : {
       templateUrl: '/edit.html',
@@ -41,7 +44,13 @@ function($stateProvider, $urlRouterProvider) {
        templateUrl: '/poll.html',
        controller: 'PollsCtrl',
        resolve: {
-       poll: ['$stateParams', 'polls', function($stateParams, polls){
+       poll: ['$stateParams', 'polls', 'slide', function($stateParams, polls, slide){
+           if(slide.slide) {
+               slide.slide = false;
+           }
+           if(slide.btn) {
+               slide.slide = false;
+           }
       return polls.getOne($stateParams.id);
       }]
   }
@@ -51,7 +60,13 @@ function($stateProvider, $urlRouterProvider) {
        templateUrl: '/chart.html',
        controller: 'ChartCtrl',
        resolve: {
-       poll: ['$stateParams', 'polls', function($stateParams, polls){
+       poll: ['$stateParams', 'polls', 'slide', function($stateParams, polls, slide){
+            if(slide.slide) {
+               slide.slide = false;
+           }
+           if(slide.btn) {
+               slide.btn = false;
+           }
       return polls.getOne($stateParams.id);
       }]
        }
