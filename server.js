@@ -1,5 +1,6 @@
 'use strict';
 var express = require('express');
+var favicon = require('serve-favicon');
 var path = require('path');
 var mongoose = require('mongoose');
 require('./models/Polls');
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.resolve(__dirname)));
 app.use(express.static(path.resolve(__dirname, 'public')));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(passport.initialize());
 
 app.get('/', function (req, res) {
@@ -33,3 +35,5 @@ app.listen(port,  function () {
 });
 
 module.exports = app;
+
+
